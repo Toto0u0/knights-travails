@@ -1,45 +1,10 @@
 import "./styles.css";
 
-let initialPosition = document.querySelector('#vertical');
-let finalPosition = document.querySelector('#horizontal');
+let initialPosition = document.querySelector("#start");
+let finalPosition = document.querySelector("#finish");
 let submitBtn = document.querySelector('#submit');
+let resultMoves = document.querySelector('#result');
 let search = [];
-
-
-submitBtn.addEventListener('click', () => {
-    search.push(initialPosition.value);
-    search.push(finalPosition.value);
-    console.log(String(search));
-    knightsTravails(search);
-})
-
-
-function dijkstra(graph, start) {
-    const distances = {};
-    const visited = new Set();
-    const queue = [start];
-
-    for (let node in graph) {
-       distances[node] = Infinity;
-    }
-
-    distances[start] = 0;
-
-    while(queue.length > 0) {
-        let currentNode = queue.shift();
-        if (visited.has(currentNode)) continue;
-        visited.add(currentNode);
-        let neighbors = graph[currentNode];
-        for (let neighbor in neighbors) {
-            let newDist = distances[currentNode] + neighbors[neighbor];
-            if (newDist < distances[neighbor]) {
-                distances[neighbor] = newDist;
-                queue.push(neighbor);
-            }
-        }
-    }
-    return distances;
-}
 
 const graph = {
     '[0,0]' : { '[1,2]': 1, '[2,1]': 1  },
@@ -115,11 +80,112 @@ const graph = {
     '[7,6]' : { '[6,4]': 1, '[5,7]': 1, '[5,5]': 1 },
     '[7,7]' : { '[6,5]': 1, '[5,6]': 1 },
 
-
-
-
 }
 
-// console.log(dijkstra(graph, "[5,5]"));
-dijkstra(graph, '[5,5]');
-console.log(dijkstra);
+submitBtn.addEventListener('click', () => {
+    if (Number.isInteger(parseInt(initialPosition.value[0])) && Number.isInteger(parseInt(initialPosition.value[2])) 
+    && Number.isInteger(parseInt(finalPosition.value[0])) && Number.isInteger(parseInt(finalPosition.value[2])) 
+    && initialPosition.value.length === 3) {
+        console.log(initialPosition.value.length);
+        console.log(initialPosition.value[0]);
+        console.log(initialPosition.value[1]);
+        console.log(initialPosition.value[2]);
+        knightsTravails(graph, `[${String(initialPosition.value)}]`, `[${String(finalPosition.value)}]`);
+        let resultDiv = document.createElement('div');
+        let result = document.createElement('p');
+        result.innerText = '';
+        document.getElementById('result').style.backgroundBlendMode = 'blue';
+        document.getElementById('result').style.boxShadow = 'rgba(213, 217, 217, .5) 0 2px 5px 0;'
+        resultDiv.appendChild(result);
+        resultMoves.appendChild(resultDiv);
+    } else {
+        document.getElementById('result').style.backgroundColor = 'rgba(67, 152, 152, 0.5);';
+        document.getElementById('result').style.boxShadow = 'rgba(83, 160, 160, 0.5) 0 2px 5px 0;'
+        document.getElementById('result').style.outline = '0';
+        result.innerText = 'Please insert the positions in a valid format ([x,y])';
+    }
+
+
+
+})
+
+function knightsTravails(graph, start, end) {
+    const distances = {};
+    const path = {};
+    let queue = [start];
+    const queueMoves = [start];
+    const visited = new Set();
+
+    for (let node in graph) {
+        distances[node] = Infinity;
+    }
+
+    distances[start] = 0;
+
+    while (queue.length > 0) {
+        let node = queue.shift();
+        if (visited.has(node)) continue;
+        visited.add(node);
+        let neighbors = graph[node];
+        for (let neighbor in neighbors) {
+            let newDistance = distances[node] + neighbors[neighbor];
+            if (newDistance < distances[neighbor]) {
+                distances[neighbor] = newDistance;
+                queue.push(neighbor);
+                
+            }
+            
+        }
+    }
+
+    let test = [];
+    test.push(start);
+    let currentMove = '';
+
+    let movesList = [
+        [1,2], [1,-2], [2,1], [2,-1], [-1,2], [-1,-2], [-2,1], [-2,-1],
+    ]
+    
+
+    function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    for (let i = 1; i < distances[end]+1;) {
+        let chosenRandomMove = movesList[randInt(0,7)];
+        let currentMove = (`[${parseInt(test[i-1][1]) + parseInt(chosenRandomMove[0])},${parseInt(test[i-1][3]) + parseInt(chosenRandomMove[1])}]`);
+
+        if (Number.isInteger(parseInt(currentMove[1])) && Number.isInteger(parseInt(currentMove[3]))) {
+            if (currentMove[1] < 8 && currentMove[3] < 8) {
+                test.push(currentMove);
+                i++;
+            }
+        }
+    }
+
+    if (test[test.length-1] != end) {
+        knightsTravails(graph, start, end);
+    }
+
+    if (test[test.length-1] === end) {
+        console.log(test);
+        console.log(`Moves: ${distances[end]}`);
+        result.innerText = `Here's your path: ${test}`;
+    }
+
+
+    return distances;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

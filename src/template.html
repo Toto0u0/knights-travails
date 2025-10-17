@@ -6,14 +6,28 @@
     <title>Knights Travails</title>
 </head>
 <body>
-    <div id="chessBoard">
+    <div id="content">
         <form onsubmit="return false">
-            <label for="vertical">Vertical</label>
-            <input type="text" name="vertical" id="vertical">
-            <label for="horizontal">Horizontal</label>
-            <input type="text" name="horizontal" id="horizontal">
-            <button type="submit" id="submit">Search</button>
+            <table>
+                <tr>
+                    <h2>Knights Travails</h2>
+                </tr>
+                <tr>
+                    <td>Starting Position</td>
+                    <td><input type="text" name="start" id="start"></td>
+                </tr>
+                <tr>
+                    <td>Final Position</td>
+                    <td><input type="text" name="finish" id="finish"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="Submit" id="submit"></td>
+                </tr>
+            </table>
         </form>
     </div>
-</body>
+    <div id="result">
+        
+    </div>
+
 </html>
